@@ -1,0 +1,98 @@
+﻿@{ Layout = null; }
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test1</title>
+    <script src="~/Scripts/jquery-3.4.1.intellisense.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <meta name="description" content="The description of my page" />
+</head>
+<body>
+    <div id="contajner">
+        <div id="divright">
+            <span id="History"> <a1>История </a1></span>
+            <span id="H1"> <a1>Достоверность экстрасенса1 </a1></span>
+            <input type="text" readonly id="D1" />
+            <span id="H1"> <a1>Числa экстрасенса1 </a1></span>
+            <input type="text" readonly id="Hi1" />
+            <span id="H1"> <a1>Достоверность экстрасенса2 </a1></span>
+            <input type="text" readonly id="D2" />
+            <span id="H1"> <a1>Числa экстрасенса2 </a1></span>
+            <input type="text" readonly id="Hi2" />
+            <span id="Hp"> <a1>Числa пользователя </a1></span>
+            <input type="text" readonly id="Hip" />
+        </div>
+        <div id="divcenter">
+            <span id="people"> <a1>Загадайте двухзначное число и нажмите кнопку "Начать"</a1></span>
+            <input type="button" id="Start" value="Начать" onclick="StartEys()" />
+            <span id="wwod" hidden><a1>Введите ваше число и нажмите "Enter"</a1></span>
+            <input id="peoplewwod" type="text" hidden onkeydown="StopEys()" />
+        </div>
+        
+        <div id="divleft">
+            <span id="E1"> <a1>Число экстрасенса1 </a1></span>
+            <input type="text" readonly id="e1" />
+            <span id="E2"> <a1>Число экстрасенса2 </a1></span>
+            <input type="text" readonly id="e2" />
+        </div>
+
+    </div>
+    <script>
+            function StartEys() {
+ 
+                $.get('/Home/People',function(data){
+                    document.getElementById("e1").value = data.n;
+                    document.getElementById("e2").value = data.n1;
+                    alert(data.n);
+                });
+                document.getElementById("people").hidden = true;
+                document.getElementById("Start").hidden = true;
+                document.getElementById("wwod").hidden = false;
+                document.getElementById("peoplewwod").hidden = false;
+            }
+
+        document.getElementById("peoplewwod").onkeydown = function (e) {
+            var g = e.keyCode;
+
+            if (g== 13) {
+                var n = document.getElementById('peoplewwod').value;
+                var dataC = { st: n };
+                $.get('/Home/PepleWWod',dataC,function(data) {
+                    document.getElementById("people").hidden =false;
+                    document.getElementById("Start").hidden =false;
+                    document.getElementById("wwod").hidden = true;
+                    document.getElementById("peoplewwod").hidden = true;
+                    document.getElementById("D1").value = data.p1;
+                    document.getElementById("D2").value = data.p2;
+                    document.getElementById("Hi1").value = '';
+                    document.getElementById("Hi2").value = "";
+                    document.getElementById("Hip").value = "";
+                    for (var i = 0; i < data.e1.length; i++) {
+                        if (i == 0)
+                            document.getElementById("Hi1").value = data.e1[i];
+                        else
+                        document.getElementById("Hi1").value = document.getElementById("Hi1").value+","+ data.e1[i];
+                    }
+                    for (var i = 0; i < data.e2.length; i++) {
+                        if (i == 0)
+                            document.getElementById("Hi2").value = data.e2[i];
+                        else
+                            document.getElementById("Hi2").value = document.getElementById("Hi2").value + "," + data.e2[i];
+                    }
+                    for (var i = 0; i < data.n.length; i++) {
+                        if (i == 0)
+                            document.getElementById("Hip").value = data.n[i];
+                        else
+                            document.getElementById("Hip").value = document.getElementById("Hip").value + "," + data.n[i];
+                    }
+                })
+            }
+        }
+        
+    </script>
+</body>
+</html>
