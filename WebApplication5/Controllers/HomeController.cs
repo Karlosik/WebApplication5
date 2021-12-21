@@ -9,8 +9,6 @@ namespace WebApplication5.Controllers
 {
     public class HomeController : Controller
     {
-        double P;
-        double P1;
         public ActionResult Index()
         {
             return View();
@@ -32,80 +30,90 @@ namespace WebApplication5.Controllers
         [HttpGet]
         public JsonResult People()
         {
-           //public const string SessionKeyName = "Name";
-        int name = 0;
-        int name1=0;
             Random ra = new Random();
-            name = ra.Next(100);
-            name1= ra.Next(100);
-            List<string> liEx = (List<string>)Session["Ectrasens"];
-            if (liEx == null)
-            {
-                liEx = new List<string>();
-            }
-            liEx.Add(name.ToString());
-            List<string> liEx1 = (List<string>)Session["Ectrasens1"];
-            if (liEx1 == null)
-            {
-                liEx1 = new List<string>();
-            }
-            liEx1.Add(name1.ToString());
-            Session["Ectrasens"] = liEx;
-            Session["Ectrasens1"] = liEx1;
+            int chislo = ra.Next(10,100);
+            int chislo1 = ra.Next(10, 100);
+
+            List<string> lEctrasens = (List<string>)Session["Ectrasens"];
+            List<string> lEctrasens1 = (List<string>)Session["Ectrasens1"];
+            Dannye dannye = new Dannye();
+            List<string> ChExstrasens = dannye.DannyeExtrasensa1(lEctrasens, chislo.ToString());
+            List<string> ChExstrasens1 = dannye.DannyeExtrasensa1(lEctrasens1, chislo1.ToString());
+            Session["Ectrasens"] = ChExstrasens;
+            Session["Ectrasens1"] = ChExstrasens1;
 
             var data = new
              {
-                 n = name,
-                n1 = name1
-             };
+                Ectrasens = chislo,
+                Ectrasens1 = chislo1
+            };
            return Json(data, JsonRequestBehavior.AllowGet);
         }
-        public class G
+        public class PeopleWwod
         {
-            public string St { get; set; }
+            public string Wwod { get; set; }
         }
         [HttpGet]
-        public JsonResult PepleWWod(G d)
+        public JsonResult PepleWWod(PeopleWwod ChisloPeople)
         {
-            int name=0;
-            int name1=0;
-            List<string> li = new List<string>();
-            List<string> li1 = new List<string>();
-            List<string> lih = (List<string>)Session["People"];
-            List<string> lip = new List<string>();
-            if (lih == null)
+            Boolean ww = false;
+            int WwodPeople = 0;
+            List<string> lEctrasens = new List<string>();
+            List<string> lEctrasens1 = new List<string>();
+            List<string> lPeople = (List<string>)Session["People"];
+            if (Int32.TryParse(ChisloPeople.Wwod, out WwodPeople))
             {
-                lih = new List<string>();
-            }
-            lih.Add(d.St.ToString());
-            Session["People"] = lih;
-            lip= (List<string>)Session["People"];
-            li = (List<string>)Session["Ectrasens"];
-            li1 = (List<string>)Session["Ectrasens1"];
-            int k= li.Count();
-            name = Convert.ToInt32(li[k-1]);
-            name1 = Convert.ToInt32(li1[k-1]);
-            int h= Convert.ToInt32(d.St);
-            if (name == h)
-            {
-                Dost.P = Dost.P+ 0.1;
-            }
+                if (WwodPeople > 9 & WwodPeople < 100)
+                {
+                    ww = true;
+                }
+                else
+                ww = false;
+                int chislo = 0;
+                int chislo1 = 0;
+
+                if (ww == true)
+                {
+                    Dannye dannye = new Dannye();
+                    List<string> ChPeople = dannye.DannyePeople(lPeople, ChisloPeople.Wwod);
+                    Session["People"] = ChPeople;
+                    lPeople = ChPeople;
+                }
+                lEctrasens = (List<string>)Session["Ectrasens"];
+                lEctrasens1 = (List<string>)Session["Ectrasens1"];
+                int ChislaCount = lEctrasens.Count();
+                chislo = Convert.ToInt32(lEctrasens[ChislaCount - 1]);
+                chislo1 = Convert.ToInt32(lEctrasens1[ChislaCount - 1]);
+                if (chislo == WwodPeople)
+                {
+                    Dostowernost.P += 0.1;
+                }
+                else
+                    Dostowernost.P -=0.1;
+                if (chislo1 == WwodPeople)
+                {
+                    Dostowernost.P1 += 0.1;
+                }
+                else
+                    Dostowernost.P1 -= 0.1;
+            } 
             else
-                Dost.P = Dost.P - 0.1;
-            if (name1 == h)
             {
-                Dost.P1 = Dost.P1 + 0.1;
+                ww = false;
             }
-            else
-                Dost.P1 = Dost.P1 - 0.1;
+            Dostowernost.P=Math.Round(Dostowernost.P,2);
+            Dostowernost.P1=Math.Round(Dostowernost.P1,2);
             var data = new
-            {
-                p1 = Dost.P,
-                p2 = Dost.P1,
-                e1 = li,
-                e2 = li1,
-                n = lip
-            };
+                {
+                    w=ww,
+                    credibility1 = Dostowernost.P,
+                    credibility2 = Dostowernost.P1,
+                    EctrasensChisla1 = lEctrasens,
+                    EctrasensChisla2 = lEctrasens1,
+                    WwodChisel = lPeople
+                };
+
+            
             return Json(data, JsonRequestBehavior.AllowGet);
         }
     }
